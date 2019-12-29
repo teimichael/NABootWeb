@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 import stu.napls.nabootweb.auth.annotation.Auth;
 import stu.napls.nabootweb.auth.model.AuthResponse;
 import stu.napls.nabootweb.auth.request.AuthRequest;
@@ -33,6 +32,7 @@ public class AccessController {
 
     @PostMapping("/login")
     public Response login(String username, String password) {
+        System.out.println(username);
         Response response;
         AuthResponse authResponse = authRequest.login(username, password);
         Assert.notNull(authResponse, "Authentication failed.");

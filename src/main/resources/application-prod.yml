@@ -7,5 +7,5 @@ spring:
 authserver:
   url: http://localhost:9000
 
-cors:
-  front-app-url: http://app:80
+appserver:
+  url: http://app:80
