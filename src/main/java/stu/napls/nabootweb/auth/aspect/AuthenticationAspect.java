@@ -10,6 +10,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import stu.napls.nabootweb.auth.annotation.Auth;
 import stu.napls.nabootweb.auth.model.AuthResponse;
+import stu.napls.nabootweb.auth.model.AuthVerify;
 import stu.napls.nabootweb.auth.request.AuthRequest;
 import stu.napls.nabootweb.core.exception.Assert;
 import stu.napls.nabootweb.core.response.ResponseCode;
@@ -44,7 +45,9 @@ public class AuthenticationAspect {
         String token = httpServletRequest.getHeader("Authorization");
 
         // Verify token
-        AuthResponse authResponse = authRequest.verify(token);
+        AuthVerify authVerify = new AuthVerify();
+        authVerify.setToken(token);
+        AuthResponse authResponse = authRequest.verify(authVerify);
 
         Assert.isTrue(authResponse != null && authResponse.getCode() == ResponseCode.SUCCESS, "Authentication failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());

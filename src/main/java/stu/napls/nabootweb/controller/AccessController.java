@@ -5,8 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stu.napls.nabootweb.auth.annotation.Auth;
-import stu.napls.nabootweb.auth.model.AuthRegister;
-import stu.napls.nabootweb.auth.model.AuthResponse;
+import stu.napls.nabootweb.auth.model.*;
 import stu.napls.nabootweb.auth.request.AuthRequest;
 import stu.napls.nabootweb.core.exception.Assert;
 import stu.napls.nabootweb.core.response.Response;
@@ -38,23 +37,21 @@ public class AccessController {
     private UserService userService;
 
     @PostMapping("/login")
-    public Response login(String username, String password) {
-        System.out.println(username);
-        Response response;
-        AuthResponse authResponse = authRequest.login(username, password);
-        Assert.notNull(authResponse, "Authentication failed.");
-        if (authResponse.getCode() == ResponseCode.SUCCESS) {
-            response = Response.success("Login successfully.", authResponse.getData());
-        } else {
-            response = Response.failure(authResponse.getMessage());
+    public Response login(@RequestBody AuthLogin authLogin) {
+        AuthResponse authResponse = authRequest.login(authLogin);
 
-        }
-        return response;
+        Assert.notNull(authResponse, "Authentication failed.");
+        Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
+
+        return Response.success("Login successfully.", authResponse.getData());
     }
 
     @PostMapping("/register")
     public Response register(String username, String password, @RequestBody User user) {
-        AuthResponse authResponse = authRequest.preregister(username, password);
+        AuthPreregister authPreregister = new AuthPreregister();
+        authPreregister.setUsername(username);
+        authPreregister.setPassword(password);
+        AuthResponse authResponse = authRequest.preregister(authPreregister);
         Assert.notNull(authResponse, "Preregistering auth server failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
         String uuid = authResponse.getData().toString();
@@ -78,7 +75,9 @@ public class AccessController {
     @Auth
     @PostMapping("/logout")
     public Response logout(HttpSession session) {
-        AuthResponse authResponse = authRequest.logout(session.getAttribute("uuid").toString());
+        AuthLogout authLogout = new AuthLogout();
+        authLogout.setUuid(session.getAttribute("uuid").toString());
+        AuthResponse authResponse = authRequest.logout(authLogout);
         Assert.notNull(authResponse, "Authentication failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, "Logout failed.");
         return Response.success("Logout successfully.");

@@ -1,14 +1,9 @@
 package stu.napls.nabootweb.auth.request;
 
-import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import stu.napls.nabootweb.auth.model.AuthRegister;
-import stu.napls.nabootweb.auth.model.AuthResponse;
+import stu.napls.nabootweb.auth.model.*;
 import stu.napls.nabootweb.config.property.AuthServer;
-import stu.napls.nabootweb.socket.model.SocketResponse;
 
 import javax.annotation.Resource;
 
@@ -30,63 +25,24 @@ public class AuthRequest {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public AuthResponse login(String username, String password) {
-        ResponseEntity<AuthResponse> responseEntity = restTemplate
-                .exchange(authServer.getUrl() + LOGIN, HttpMethod.POST, getHttpEntity(getMapForLogin(username, password)), AuthResponse.class);
-        return responseEntity.getBody();
+    public AuthResponse login(AuthLogin authLogin) {
+        return restTemplate.postForObject(authServer.getUrl() + LOGIN, authLogin, AuthResponse.class);
     }
 
-    public AuthResponse preregister(String username, String password) {
-        ResponseEntity<AuthResponse> responseEntity = restTemplate
-                .exchange(authServer.getUrl() + PREREGISTER, HttpMethod.POST, getHttpEntity(getMapForRegister(username, password)), AuthResponse.class);
-        return responseEntity.getBody();
+    public AuthResponse preregister(AuthPreregister authPreregister) {
+        return restTemplate.postForObject(authServer.getUrl() + PREREGISTER, authPreregister, AuthResponse.class);
     }
 
     public AuthResponse register(AuthRegister authRegister) {
         return restTemplate.postForObject(authServer.getUrl() + REGISTER, authRegister, AuthResponse.class);
     }
 
-    public AuthResponse logout(String token) {
-        ResponseEntity<AuthResponse> responseEntity = restTemplate
-                .exchange(authServer.getUrl() + LOGOUT, HttpMethod.POST, getHttpEntity(getMapForLogout(token)), AuthResponse.class);
-        return responseEntity.getBody();
+    public AuthResponse logout(AuthLogout authLogout) {
+        return restTemplate.postForObject(authServer.getUrl() + LOGOUT, authLogout, AuthResponse.class);
     }
 
-    public AuthResponse verify(String token) {
-        ResponseEntity<AuthResponse> responseEntity = restTemplate
-                .exchange(authServer.getUrl() + VERIFY, HttpMethod.POST, getHttpEntity(getMapForVerify(token)), AuthResponse.class);
-        return responseEntity.getBody();
+    public AuthResponse verify(AuthVerify authVerify) {
+        return restTemplate.postForObject(authServer.getUrl() + VERIFY, authVerify, AuthResponse.class);
     }
 
-    public static MultiValueMap<String, String> getMapForLogin(String username, String password) {
-        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("username", username);
-        multiValueMap.add("password", password);
-        return multiValueMap;
-    }
-
-    public static MultiValueMap<String, String> getMapForRegister(String username, String password) {
-        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("username", username);
-        multiValueMap.add("password", password);
-        return multiValueMap;
-    }
-
-    public static MultiValueMap<String, String> getMapForLogout(String uuid) {
-        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("uuid", uuid);
-        return multiValueMap;
-    }
-
-    public static MultiValueMap<String, String> getMapForVerify(String token) {
-        MultiValueMap<String, String> multiValueMap = new LinkedMultiValueMap<>();
-        multiValueMap.add("token", token);
-        return multiValueMap;
-    }
-
-    private static HttpEntity<MultiValueMap<String, String>> getHttpEntity(MultiValueMap<String, String> multiValueMap) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        return new HttpEntity<>(multiValueMap, headers);
-    }
 }
