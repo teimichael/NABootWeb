@@ -5,8 +5,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import stu.napls.nabootweb.auth.model.AuthRegister;
 import stu.napls.nabootweb.auth.model.AuthResponse;
 import stu.napls.nabootweb.config.property.AuthServer;
+import stu.napls.nabootweb.socket.model.SocketResponse;
 
 import javax.annotation.Resource;
 
@@ -22,6 +24,7 @@ public class AuthRequest {
 
     private static final String LOGIN = "/auth/login";
     private static final String LOGOUT = "/auth/logout";
+    private static final String PREREGISTER = "/auth/preregister";
     private static final String REGISTER = "/auth/register";
     private static final String VERIFY = "/verify";
 
@@ -33,10 +36,14 @@ public class AuthRequest {
         return responseEntity.getBody();
     }
 
-    public AuthResponse register(String username, String password) {
+    public AuthResponse preregister(String username, String password) {
         ResponseEntity<AuthResponse> responseEntity = restTemplate
-                .exchange(authServer.getUrl() + REGISTER, HttpMethod.POST, getHttpEntity(getMapForRegister(username, password)), AuthResponse.class);
+                .exchange(authServer.getUrl() + PREREGISTER, HttpMethod.POST, getHttpEntity(getMapForRegister(username, password)), AuthResponse.class);
         return responseEntity.getBody();
+    }
+
+    public AuthResponse register(AuthRegister authRegister) {
+        return restTemplate.postForObject(authServer.getUrl() + REGISTER, authRegister, AuthResponse.class);
     }
 
     public AuthResponse logout(String token) {

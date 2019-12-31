@@ -9,3 +9,6 @@ authserver:
 
 appserver:
   url: http://app:80
+
+socketserver:
+  url: http://localhost:9001

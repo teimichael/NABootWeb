@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import stu.napls.nabootweb.auth.annotation.Auth;
+import stu.napls.nabootweb.auth.model.AuthRegister;
 import stu.napls.nabootweb.auth.model.AuthResponse;
 import stu.napls.nabootweb.auth.request.AuthRequest;
 import stu.napls.nabootweb.core.exception.Assert;
@@ -12,6 +13,9 @@ import stu.napls.nabootweb.core.response.Response;
 import stu.napls.nabootweb.core.response.ResponseCode;
 import stu.napls.nabootweb.model.User;
 import stu.napls.nabootweb.service.UserService;
+import stu.napls.nabootweb.socket.model.SocketRegister;
+import stu.napls.nabootweb.socket.model.SocketResponse;
+import stu.napls.nabootweb.socket.request.SocketRequest;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
@@ -26,6 +30,9 @@ public class AccessController {
 
     @Resource
     private AuthRequest authRequest;
+
+    @Resource
+    private SocketRequest socketRequest;
 
     @Resource
     private UserService userService;
@@ -47,18 +54,25 @@ public class AccessController {
 
     @PostMapping("/register")
     public Response register(String username, String password, @RequestBody User user) {
-        Response response;
-        AuthResponse authResponse = authRequest.register(username, password);
-        Assert.notNull(authResponse, "Authentication failed.");
-        if (authResponse.getCode() == ResponseCode.SUCCESS) {
-            user.setUuid(authResponse.getData().toString());
-            userService.create(user);
-            response = Response.success("Register successfully");
-        } else {
-            response = Response.failure(authResponse.getMessage());
-        }
+        AuthResponse authResponse = authRequest.preregister(username, password);
+        Assert.notNull(authResponse, "Preregistering auth server failed.");
+        Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
+        String uuid = authResponse.getData().toString();
 
-        return response;
+        SocketRegister socketRegister = new SocketRegister();
+        socketRegister.setUuid(uuid);
+        SocketResponse socketResponse = socketRequest.register(socketRegister);
+        Assert.notNull(socketResponse, "Registering socket server failed");
+
+        user.setUuid(uuid);
+        userService.create(user);
+
+        AuthRegister authRegister = new AuthRegister();
+        authRegister.setUuid(uuid);
+        authResponse = authRequest.register(authRegister);
+        Assert.isTrue(authResponse != null && authResponse.getCode() == ResponseCode.SUCCESS, "Register failed. Please contact the administrator.");
+
+        return Response.success("Register successfully");
     }
 
     @Auth
