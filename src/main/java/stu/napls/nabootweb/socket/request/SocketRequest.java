@@ -19,7 +19,6 @@ public class SocketRequest {
     private RestTemplate restTemplate = new RestTemplate();
 
     public SocketResponse register(SocketRegister socketRegister) {
-        SocketResponse socketResponse = restTemplate.postForObject(socketServer.getUrl() + REGISTER, socketRegister, SocketResponse.class);
-        return socketResponse;
+        return restTemplate.postForObject(socketServer.getUrl() + REGISTER, socketRegister, SocketResponse.class);
     }
 }
