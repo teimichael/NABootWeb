@@ -14,11 +14,11 @@ public class SocketRequest {
     @Resource
     private SocketServer socketServer;
 
-    private static final String REGISTER = "/access/register";
+    private static final String THIRD_REGISTER = "/access/third/register";
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public SocketResponse register(SocketRegister socketRegister) {
-        return restTemplate.postForObject(socketServer.getUrl() + REGISTER, socketRegister, SocketResponse.class);
+    public SocketResponse registerFromThird(SocketRegister socketRegister) {
+        return restTemplate.postForObject(socketServer.getUrl() + THIRD_REGISTER, socketRegister, SocketResponse.class);
     }
 }

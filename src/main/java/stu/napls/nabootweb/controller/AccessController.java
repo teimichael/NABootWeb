@@ -58,7 +58,7 @@ public class AccessController {
 
         SocketRegister socketRegister = new SocketRegister();
         socketRegister.setUuid(uuid);
-        SocketResponse socketResponse = socketRequest.register(socketRegister);
+        SocketResponse socketResponse = socketRequest.registerFromThird(socketRegister);
         Assert.notNull(socketResponse, "Registering socket server failed");
 
         user.setUuid(uuid);
