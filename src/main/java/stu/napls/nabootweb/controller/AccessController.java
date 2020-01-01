@@ -12,8 +12,8 @@ import stu.napls.nabootweb.core.response.Response;
 import stu.napls.nabootweb.core.response.ResponseCode;
 import stu.napls.nabootweb.model.User;
 import stu.napls.nabootweb.service.UserService;
-import stu.napls.nabootweb.socket.model.SocketRegister;
 import stu.napls.nabootweb.socket.model.SocketResponse;
+import stu.napls.nabootweb.socket.model.SocketThirdRegister;
 import stu.napls.nabootweb.socket.request.SocketRequest;
 
 import javax.annotation.Resource;
@@ -56,9 +56,9 @@ public class AccessController {
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
         String uuid = authResponse.getData().toString();
 
-        SocketRegister socketRegister = new SocketRegister();
-        socketRegister.setUuid(uuid);
-        SocketResponse socketResponse = socketRequest.registerFromThird(socketRegister);
+        SocketThirdRegister socketThirdRegister = new SocketThirdRegister();
+        socketThirdRegister.setUuid(uuid);
+        SocketResponse socketResponse = socketRequest.registerFromThird(socketThirdRegister);
         Assert.notNull(socketResponse, "Registering socket server failed");
 
         user.setUuid(uuid);

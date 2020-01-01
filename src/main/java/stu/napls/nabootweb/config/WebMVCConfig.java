@@ -11,7 +11,7 @@ import javax.annotation.Resource;
 
 @Configuration
 @EnableWebMvc
-public class WebConfig implements WebMvcConfigurer {
+public class WebMVCConfig implements WebMvcConfigurer {
 
     @Resource
     private AppServer appServer;
