@@ -11,4 +11,4 @@ appserver:
   url: http://localhost:9528
 
 socketserver:
-  url: http://localhost:9001
+  url: http://localhost:9010
