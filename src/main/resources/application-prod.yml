@@ -14,5 +14,5 @@ socketserver:
   url: http://web-socket:9010
 
 staticserver:
-  url: http://localhost:9020
+  url: http://web-static:9020
   root-path: /opt/NABootWebStatic

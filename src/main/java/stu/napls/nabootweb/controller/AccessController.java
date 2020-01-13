@@ -1,17 +1,17 @@
 package stu.napls.nabootweb.controller;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 import stu.napls.nabootweb.auth.annotation.Auth;
 import stu.napls.nabootweb.auth.model.*;
 import stu.napls.nabootweb.auth.request.AuthRequest;
+import stu.napls.nabootweb.core.dictionary.ResponseCode;
 import stu.napls.nabootweb.core.exception.Assert;
 import stu.napls.nabootweb.core.response.Response;
-import stu.napls.nabootweb.core.dictionary.ResponseCode;
 import stu.napls.nabootweb.model.User;
 import stu.napls.nabootweb.service.UserService;
+import stu.napls.nabootweb.socket.model.SocketResponse;
+import stu.napls.nabootweb.socket.model.SocketThirdRegister;
 import stu.napls.nabootweb.socket.request.SocketRequest;
 
 import javax.annotation.Resource;
@@ -45,7 +45,7 @@ public class AccessController {
     }
 
     @PostMapping("/register")
-    public Response register(String username, String password, @RequestBody User user) {
+    public Response register(@RequestParam String username, @RequestParam String password, @RequestBody User user) {
         AuthPreregister authPreregister = new AuthPreregister();
         authPreregister.setUsername(username);
         authPreregister.setPassword(password);
@@ -55,10 +55,10 @@ public class AccessController {
         String uuid = authResponse.getData().toString();
 
         // TODO Register third services.
-//        SocketThirdRegister socketThirdRegister = new SocketThirdRegister();
-//        socketThirdRegister.setUuid(uuid);
-//        SocketResponse socketResponse = socketRequest.registerFromThird(socketThirdRegister);
-//        Assert.notNull(socketResponse, "Registering socket server failed");
+        SocketThirdRegister socketThirdRegister = new SocketThirdRegister();
+        socketThirdRegister.setUuid(uuid);
+        SocketResponse socketResponse = socketRequest.registerFromThird(socketThirdRegister);
+        Assert.notNull(socketResponse, "Registering socket server failed");
 
         user.setUuid(uuid);
         userService.update(user);
@@ -73,7 +73,7 @@ public class AccessController {
 
     @Auth
     @PostMapping("/logout")
-    public Response logout(HttpSession session) {
+    public Response logout(@ApiIgnore HttpSession session) {
         AuthLogout authLogout = new AuthLogout();
         authLogout.setUuid(session.getAttribute("uuid").toString());
         AuthResponse authResponse = authRequest.logout(authLogout);

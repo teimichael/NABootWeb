@@ -46,7 +46,6 @@ public class StorageServiceImpl implements StorageService {
                 break;
             }
         }
-        System.out.println(contentType);
         name = name + "." + contentType;
         ImageIO.write(ImageIO.read(image.getInputStream()), contentType, new File(staticServer.getRootPath() + path + name));
         return name;
