@@ -35,12 +35,18 @@ public class UserController {
     @Resource
     private StaticServer staticServer;
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Auth
     @GetMapping("/get/info")
     public Response getInfo(@ApiIgnore HttpSession session) {
         return Response.success(userService.findUserByUuid(session.getAttribute("uuid").toString()));
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Auth
     @GetMapping("/get/list")
     public Response getList() {

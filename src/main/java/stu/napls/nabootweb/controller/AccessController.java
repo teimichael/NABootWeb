@@ -1,5 +1,7 @@
 package stu.napls.nabootweb.controller;
 
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 import stu.napls.nabootweb.auth.annotation.Auth;
@@ -71,6 +73,9 @@ public class AccessController {
         return Response.success("Register successfully");
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
     @Auth
     @PostMapping("/logout")
     public Response logout(@ApiIgnore HttpSession session) {
