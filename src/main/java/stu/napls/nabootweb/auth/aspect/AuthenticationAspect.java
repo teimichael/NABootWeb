@@ -13,7 +13,7 @@ import stu.napls.nabootweb.auth.model.AuthResponse;
 import stu.napls.nabootweb.auth.model.AuthVerify;
 import stu.napls.nabootweb.auth.request.AuthRequest;
 import stu.napls.nabootweb.core.exception.Assert;
-import stu.napls.nabootweb.core.response.ResponseCode;
+import stu.napls.nabootweb.core.dictionary.ResponseCode;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;

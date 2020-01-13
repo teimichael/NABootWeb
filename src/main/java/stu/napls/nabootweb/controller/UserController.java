@@ -1,14 +1,22 @@
 package stu.napls.nabootweb.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import springfox.documentation.annotations.ApiIgnore;
 import stu.napls.nabootweb.auth.annotation.Auth;
+import stu.napls.nabootweb.config.property.StaticServer;
+import stu.napls.nabootweb.core.dictionary.StaticPath;
+import stu.napls.nabootweb.core.exception.Assert;
 import stu.napls.nabootweb.core.response.Response;
+import stu.napls.nabootweb.model.User;
+import stu.napls.nabootweb.service.StorageService;
 import stu.napls.nabootweb.service.UserService;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 /**
  * @Author Tei Michael
@@ -21,9 +29,15 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private StorageService storageService;
+
+    @Resource
+    private StaticServer staticServer;
+
     @Auth
     @GetMapping("/get/info")
-    public Response getInfo(HttpSession session) {
+    public Response getInfo(@ApiIgnore HttpSession session) {
         return Response.success(userService.findUserByUuid(session.getAttribute("uuid").toString()));
     }
 
@@ -31,5 +45,18 @@ public class UserController {
     @GetMapping("/get/list")
     public Response getList() {
         return Response.success(userService.findAllUser());
+    }
+
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
+                    required = true, dataType = "string", paramType = "header")})
+    @Auth
+    @PostMapping("/post/avatar")
+    public Response postAvatar(@RequestParam MultipartFile avatar, @ApiIgnore HttpSession session) throws IOException {
+        User user = userService.findUserByUuid(session.getAttribute("uuid").toString());
+        Assert.notNull(user, "Authentication failed");
+        String name = storageService.storeImage(avatar, StaticPath.AVATAR, user.getId() + "_avatar");
+        user.setAvatar(staticServer.getUrl() + StaticPath.AVATAR + name);
+        return Response.success(userService.update(user));
     }
 }

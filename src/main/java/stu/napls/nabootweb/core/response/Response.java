@@ -1,6 +1,7 @@
 package stu.napls.nabootweb.core.response;
 
 import lombok.Data;
+import stu.napls.nabootweb.core.dictionary.ResponseCode;
 
 import java.io.Serializable;
 

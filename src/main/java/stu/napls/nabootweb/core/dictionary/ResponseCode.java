@@ -1,4 +1,4 @@
-package stu.napls.nabootweb.core.response;
+package stu.napls.nabootweb.core.dictionary;
 
 import org.springframework.http.HttpStatus;
 

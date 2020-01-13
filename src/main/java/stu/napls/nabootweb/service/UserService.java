@@ -5,7 +5,7 @@ import stu.napls.nabootweb.model.User;
 import java.util.List;
 
 public interface UserService {
-    User create(User user);
+    User update(User user);
 
     User findUserByUuid(String uuid);
 

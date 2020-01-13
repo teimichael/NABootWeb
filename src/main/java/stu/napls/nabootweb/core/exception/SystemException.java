@@ -1,6 +1,6 @@
 package stu.napls.nabootweb.core.exception;
 
-import stu.napls.nabootweb.core.response.ResponseCode;
+import stu.napls.nabootweb.core.dictionary.ResponseCode;
 
 /**
  * @Author Tei Michael

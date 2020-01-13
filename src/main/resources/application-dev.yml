@@ -12,3 +12,7 @@ appserver:
 
 socketserver:
   url: http://localhost:9010
+
+staticserver:
+  url: http://localhost:81
+  root-path: C:/wamp64/www

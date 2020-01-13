@@ -12,3 +12,7 @@ appserver:
 
 socketserver:
   url: http://web-socket:9010
+
+staticserver:
+  url: http://localhost:9020
+  root-path: /opt/NABootWebStatic

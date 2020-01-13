@@ -26,6 +26,9 @@ public class User {
     @Column(name = "age")
     private int age;
 
+    @Column(name = "avatar")
+    private String avatar;
+
     @Column(name = "createDate")
     @CreatedDate
     private Date createDate;
