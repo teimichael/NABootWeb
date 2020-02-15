@@ -25,7 +25,7 @@ import javax.servlet.http.HttpSession;
  */
 @RestController
 @RequestMapping("/access")
-public class AccessController {
+public class AccessController extends BaseController{
 
     @Resource
     private AuthRequest authRequest;
@@ -78,9 +78,9 @@ public class AccessController {
                     required = true, dataType = "string", paramType = "header")})
     @Auth
     @PostMapping("/logout")
-    public Response logout(@ApiIgnore HttpSession session) {
+    public Response logout() {
         AuthLogout authLogout = new AuthLogout();
-        authLogout.setUuid(session.getAttribute("uuid").toString());
+        authLogout.setUuid(getSessionUserUUID());
         AuthResponse authResponse = authRequest.logout(authLogout);
         Assert.notNull(authResponse, "Authentication failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, "Logout failed.");

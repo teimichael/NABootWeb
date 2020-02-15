@@ -24,7 +24,7 @@ import java.io.IOException;
  */
 @RestController
 @RequestMapping("/user")
-public class UserController {
+public class UserController extends BaseController{
 
     @Resource
     private UserService userService;
@@ -40,8 +40,8 @@ public class UserController {
                     required = true, dataType = "string", paramType = "header")})
     @Auth
     @GetMapping("/get/info")
-    public Response getInfo(@ApiIgnore HttpSession session) {
-        return Response.success(userService.findUserByUuid(session.getAttribute("uuid").toString()));
+    public Response getInfo() {
+        return Response.success(getSessionUser());
     }
 
     @ApiImplicitParams({
@@ -58,8 +58,8 @@ public class UserController {
                     required = true, dataType = "string", paramType = "header")})
     @Auth
     @PostMapping("/post/avatar")
-    public Response postAvatar(@RequestParam MultipartFile avatar, @ApiIgnore HttpSession session) throws IOException {
-        User user = userService.findUserByUuid(session.getAttribute("uuid").toString());
+    public Response postAvatar(@RequestParam MultipartFile avatar) throws IOException {
+        User user = getSessionUser();
         Assert.notNull(user, "Authentication failed");
         String name = storageService.storeImage(avatar, StaticPath.AVATAR, user.getId() + "_avatar");
         user.setAvatar(staticServer.getUrl() + StaticPath.AVATAR + name);
