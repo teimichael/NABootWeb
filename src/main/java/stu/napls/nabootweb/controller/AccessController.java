@@ -7,6 +7,7 @@ import springfox.documentation.annotations.ApiIgnore;
 import stu.napls.nabootweb.auth.annotation.Auth;
 import stu.napls.nabootweb.auth.model.*;
 import stu.napls.nabootweb.auth.request.AuthRequest;
+import stu.napls.nabootweb.config.GlobalConstant;
 import stu.napls.nabootweb.core.dictionary.ResponseCode;
 import stu.napls.nabootweb.core.exception.Assert;
 import stu.napls.nabootweb.core.response.Response;
@@ -25,7 +26,7 @@ import javax.servlet.http.HttpSession;
  */
 @RestController
 @RequestMapping("/access")
-public class AccessController extends BaseController{
+public class AccessController extends BaseController {
 
     @Resource
     private AuthRequest authRequest;
@@ -38,6 +39,7 @@ public class AccessController extends BaseController{
 
     @PostMapping("/login")
     public Response login(@RequestBody AuthLogin authLogin) {
+        authLogin.setSource(GlobalConstant.SERVICE_ID);
         AuthResponse authResponse = authRequest.login(authLogin);
 
         Assert.notNull(authResponse, "Authentication failed.");
@@ -51,7 +53,7 @@ public class AccessController extends BaseController{
         AuthPreregister authPreregister = new AuthPreregister();
         authPreregister.setUsername(username);
         authPreregister.setPassword(password);
-        authPreregister.setSource("NABootWeb");
+        authPreregister.setSource(GlobalConstant.SERVICE_ID);
         AuthResponse authResponse = authRequest.preregister(authPreregister);
         Assert.notNull(authResponse, "Preregistering auth server failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
