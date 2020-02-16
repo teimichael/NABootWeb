@@ -51,6 +51,7 @@ public class AccessController extends BaseController{
         AuthPreregister authPreregister = new AuthPreregister();
         authPreregister.setUsername(username);
         authPreregister.setPassword(password);
+        authPreregister.setSource("NABootWeb");
         AuthResponse authResponse = authRequest.preregister(authPreregister);
         Assert.notNull(authResponse, "Preregistering auth server failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
