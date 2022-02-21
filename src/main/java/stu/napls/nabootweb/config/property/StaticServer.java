@@ -11,6 +11,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Getter
 public class StaticServer {
+    @Value("${staticserver.enabled}")
+    private boolean enabled;
+
     @Value("${staticserver.url}")
     private String url;
 

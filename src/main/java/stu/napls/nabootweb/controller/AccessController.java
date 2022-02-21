@@ -1,24 +1,25 @@
 package stu.napls.nabootweb.controller;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
-import springfox.documentation.annotations.ApiIgnore;
 import stu.napls.nabootweb.auth.annotation.Auth;
 import stu.napls.nabootweb.auth.model.*;
 import stu.napls.nabootweb.auth.request.AuthRequest;
 import stu.napls.nabootweb.config.GlobalConstant;
+import stu.napls.nabootweb.config.property.SocketServer;
 import stu.napls.nabootweb.core.dictionary.ResponseCode;
 import stu.napls.nabootweb.core.exception.Assert;
 import stu.napls.nabootweb.core.response.Response;
 import stu.napls.nabootweb.model.User;
+import stu.napls.nabootweb.model.vo.UserRegisterVO;
 import stu.napls.nabootweb.service.UserService;
 import stu.napls.nabootweb.socket.model.SocketResponse;
 import stu.napls.nabootweb.socket.model.SocketThirdRegister;
 import stu.napls.nabootweb.socket.request.SocketRequest;
+import stu.napls.nabootweb.utils.BeanUtils;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 
 /**
  * @Author Tei Michael
@@ -37,8 +38,11 @@ public class AccessController extends BaseController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private SocketServer socketServer;
+
     @PostMapping("/login")
-    public Response login(@RequestBody AuthLogin authLogin) {
+    public Response<Object> login(@RequestBody AuthLogin authLogin) {
         authLogin.setSource(GlobalConstant.SERVICE_ID);
         AuthResponse authResponse = authRequest.login(authLogin);
 
@@ -49,7 +53,7 @@ public class AccessController extends BaseController {
     }
 
     @PostMapping("/register")
-    public Response register(@RequestParam String username, @RequestParam String password, @RequestBody User user) {
+    public Response<Object> register(@RequestParam String username, @RequestParam String password, @RequestBody UserRegisterVO userRegisterVO) {
         AuthPreregister authPreregister = new AuthPreregister();
         authPreregister.setUsername(username);
         authPreregister.setPassword(password);
@@ -60,10 +64,15 @@ public class AccessController extends BaseController {
         String uuid = authResponse.getData().toString();
 
         // TODO Register third services.
-        SocketThirdRegister socketThirdRegister = new SocketThirdRegister();
-        socketThirdRegister.setUuid(uuid);
-        SocketResponse socketResponse = socketRequest.registerFromThird(socketThirdRegister);
-        Assert.notNull(socketResponse, "Registering socket server failed");
+        // Register Socket Server account if enabled
+        if (socketServer.isEnabled()) {
+            SocketThirdRegister socketThirdRegister = new SocketThirdRegister();
+            socketThirdRegister.setUuid(uuid);
+            SocketResponse socketResponse = socketRequest.registerFromThird(socketThirdRegister);
+            Assert.notNull(socketResponse, "Registering socket server failed");
+        }
+
+        User user = BeanUtils.copyBean(userRegisterVO, User.class);
 
         user.setUuid(uuid);
         userService.update(user);
@@ -76,12 +85,10 @@ public class AccessController extends BaseController {
         return Response.success("Register successfully");
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
+    @Operation(security = @SecurityRequirement(name = "Authorization"))
     @Auth
     @PostMapping("/logout")
-    public Response logout() {
+    public Response<Object> logout() {
         AuthLogout authLogout = new AuthLogout();
         authLogout.setUuid(getSessionUserUUID());
         AuthResponse authResponse = authRequest.logout(authLogout);

@@ -1,10 +1,9 @@
 package stu.napls.nabootweb.controller;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import springfox.documentation.annotations.ApiIgnore;
 import stu.napls.nabootweb.auth.annotation.Auth;
 import stu.napls.nabootweb.config.property.StaticServer;
 import stu.napls.nabootweb.core.dictionary.StaticPath;
@@ -15,16 +14,16 @@ import stu.napls.nabootweb.service.StorageService;
 import stu.napls.nabootweb.service.UserService;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.List;
 
 /**
- * @Author Tei Michael
- * @Date 12/28/2019
+ * @author Tei Michael
+ * @date 2/21/2022
  */
 @RestController
 @RequestMapping("/user")
-public class UserController extends BaseController{
+public class UserController extends BaseController {
 
     @Resource
     private UserService userService;
@@ -35,30 +34,25 @@ public class UserController extends BaseController{
     @Resource
     private StaticServer staticServer;
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
+    @Operation(security = @SecurityRequirement(name = "Authorization"))
     @Auth
     @GetMapping("/get/info")
-    public Response getInfo() {
+    public Response<User> getInfo() {
         return Response.success(getSessionUser());
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
+    @Operation(security = @SecurityRequirement(name = "Authorization"))
     @Auth
     @GetMapping("/get/list")
-    public Response getList() {
+    public Response<List<User>> getList() {
         return Response.success(userService.findAllUser());
     }
 
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "Authorization", value = "Authorization token",
-                    required = true, dataType = "string", paramType = "header")})
+    @Operation(security = @SecurityRequirement(name = "Authorization"))
     @Auth
     @PostMapping("/post/avatar")
-    public Response postAvatar(@RequestParam MultipartFile avatar) throws IOException {
+    public Response<User> postAvatar(@RequestParam MultipartFile avatar) throws IOException {
+        Assert.isTrue(staticServer.isEnabled(), "Static Server is disabled.");
         User user = getSessionUser();
         Assert.notNull(user, "Authentication failed");
         String name = storageService.storeImage(avatar, StaticPath.AVATAR, user.getId() + "_avatar");

@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 @Getter
 public class SocketServer {
 
+    @Value("${socketserver.enabled}")
+    private boolean enabled;
+
     @Value("${socketserver.url}")
     private String url;
 }

@@ -49,7 +49,7 @@ public class AuthenticationAspect {
         authVerify.setToken(token);
         AuthResponse authResponse = authRequest.verify(authVerify);
 
-        Assert.isTrue(authResponse != null, "Authentication failed.");
+        Assert.notNull(authResponse, "Authentication failed.");
         Assert.isTrue(authResponse.getCode() == ResponseCode.SUCCESS, authResponse.getMessage());
 
         HttpSession httpSession = httpServletRequest.getSession();
